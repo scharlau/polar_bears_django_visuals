@@ -1,4 +1,4 @@
-# Parsing Polar Bear Data with Python and Django
+# Visualising Polar Bear Data with Python and Django
 This is a demonstrator app focusing on different ways to use python and flask to parse data for a web application using polar bear tracking data. 
 
 The goal of 'deliberate practice' is to think about how you'd solve this challenge, and to work at developing code to make this work. There is no single 'correct' version of this code. The purpose of the exercise it become familiar with different ways of making the application work. You should explore how this simple application is done in python with flask and sqlite3 so that you understand how the components work together to show up in the views you see in the browser.
