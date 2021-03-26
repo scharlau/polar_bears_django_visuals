@@ -31,7 +31,7 @@ As we're only doing this in a basic way, we can do the following on our 'templat
 
 With this in plsce we can now add the components for the map further down the page. We add this after the details for the bear, and before we list the sightings. We want to show where the bear was tagged. As you can see we're reusing the coordinates for latitude and longitude from above in the javascript.
 
-        {{bear.ear_applied}}	
+     {{bear.ear_applied}}	
      </p>
      <div id="mapid"></div>
      <script type = "text/javascript">
@@ -41,9 +41,8 @@ With this in plsce we can now add the components for the map further down the pa
     maxZoom: 18,
     id: 'mapbox.mapbox-terrain-v2',
     accessToken: 'your.mapbox.access.token'
-}).addTo(mymap);
-var marker = L.marker([{{ bear.capture_lat}}, {{bear.capture_long}}]).addTo(mymap);
-
+    }).addTo(mymap);
+    var marker = L.marker([{{ bear.capture_lat}}, {{bear.capture_long}}]).addTo(mymap);
     </script>
      <p>Sightings for this bear via Radio Device</p>
 
