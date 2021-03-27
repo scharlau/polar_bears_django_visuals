@@ -18,7 +18,7 @@ This is based on the tutorial at https://leafletjs.com/examples/quick-start/ All
 
 In order to use any icons on the map (one colour for tagging, another for sightings), we need to add the folder for STATIC_URL in the settings.py file to our app. Add a folder 'static' next to the templates and migrations folders, and then save two icons there. Then we add the {% load static %} declaration at the top of the template file.
 
-As we're only doing this in a basic way, we can do the following on our 'templates/bear_detail.html' page. Add the stylesheet, script and style parts. These add the CSS for leaflet, and our map display, plus the JS for leaflet.
+As we're only doing this in a basic way, we can do the following on our 'templates/bears/bear_detail.html' page. Add the stylesheet, script and style parts. These add the CSS for leaflet, and our map display, plus the JS for leaflet.
 
 Open the file and add {% load static %} as the first line in the file. Then add the changes below:
 
@@ -63,7 +63,110 @@ From here you could show the locations of the sightings on a map using the GPS c
 
 We'll add a chart to the main page showing the variations in the bears as a whole using the guide at https://www.chartjs.org/docs/latest/getting-started/ which should show the basic options in practice.
 
+First, we ensure it all works by adding the basic scenario to our page. This will confirm the javascript is loading, and that our chart is displaying in the right location. Open 'templates/bears/bear_list.html' and add this code near the top of the file. This  will put the chart above the listing of the bears. This should be before the loop of bears details.
 
+    <h1>Polar bears Tagged for Tracking</h1>
+    <canvas id="myChart"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script type= 'text/javascript'>
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var chart = new Chart(ctx, {
+    // The type of chart we want to create
+    type: 'line',
+
+    // The data for our dataset
+    data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        datasets: [{
+            label: 'My First dataset',
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: [0, 10, 5, 2, 20, 30, 45]
+        }]
+    },
+
+    // Configuration options go here
+    options: {}
+    });
+    </script>
+    
+You should now reload the page and see a curvy line with a pink shaded area at the top of the page.
+
+Our next step is to swap out the data above with relevant bear data using the attributes that we have. To do that we need to go back to our view and sift through our array of bears so that we can collect some of the values for the attributes by counting them, and collecting them in different variables, which we'll pass back to the template for use in the chart. 
+
+If you look at the models.py file for the bear, then you'll see we have six variables, which we could use for display. Some will be straightforward, such as ear, either left or right, and sex, either male or female. Others, are more complicated such as the pTT_ID label, which is presumably unique for each bear, so there's no point doing that one. Similarly, we assume the lat/longs are also unique, but we could see if they can be grouped into a number locations with appropriate bounds, ie plus/minus a value.
+
+We'll do an easy one to start: how many male/female, and how many left/right ears are tagged. We can do this by looping through each item in our collection, and counting values.
+
+We can put this in the bears/views.py file as our updated bear_list method:
+
+        def bear_list(request):
+        bears = Bear.objects.all()
+        left_ear = 0
+        right_ear= 0
+        male = 0
+        female = 0
+
+        for bear in bears:
+                if bear.sex == 'M':
+                        male += 1
+                else:
+                        female += 1
+                if  bear.ear_applied == 'Left':
+                        left_ear += 1
+                else:
+                        right_ear += 1
+        
+        return render(request, 'bears/bear_list.html', {'bears' : bears, 
+        'left_ear': left_ear, 'right_ear': right_ear, 'male': male, 'female': female})
+
+This is all fine, and works for our purposes. We just do if/else statements to drop items into our variables, and then pass them to the template.
+
+In the template we change our javascript for the chart to look like this:
+
+        var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'bar',
+
+        // The data for our dataset
+        data: {
+        labels: ['Male', 'Female', 'Left Ear', 'Right Ear'],
+        datasets: [{
+            label: 'Polar Bears',
+            order: number
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: [{{ male }},{{ female }}, {{ left_ear }}, {{ right_ear }}]
+        }]
+        },
+
+        // Configuration options go here
+        options: { }
+        });
+
+We change it to a bar chart, and then give it a new label. We pass the variable into the data array using the familiar syntax. After you reload the page, it looks like there are no male bears. Looking at the list below, you can see that there are a number of male ones. What's going on?
+
+For a clue look at the legend on the y-axis. It goes from 12->18. That's why it looks like there are none. Let's change that. 
+
+Go to the configuration options and add these settings as part of the https://www.chartjs.org/docs/latest/axes/cartesian/linear.html then you'll find the bar chart goes from zero:
+
+        // Configuration options go here
+        options: { 
+                scales: {
+                        yAxes: [{
+                                ticks: {
+                                        beginAtZero: true
+                                        }
+                                }]
+                        }
+                }
+        });
+
+Now if you reload the page you'll see all 12 male bears. 
+
+As you can see, it is not too complicated to add either charts, or maps. For charts, you need to do more data manipulation to create the variables that you want, and for most that will be easy.
+
+The challenge comes in deciding how complex you want your chart to be. We've used simple options here, but if you look through the examples, then you'll see there are many more options too. Enjoy.
 
     
 
