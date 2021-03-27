@@ -14,9 +14,13 @@ We'll use https://www.chartjs.org for charts, and https://leafletjs.com for maps
 
 ## Add a Map page for Each Bear
 
-This is based on the tutorial at https://leafletjs.com/examples/quick-start/ All we're doing is making changes for our app. Use the details for pulling the CSS and JS files from unpkg.com to make life easier. You will also need an account at https://www.mapbox.com to use leaflet, and you should fit well within the free tier.
+This is based on the tutorial at https://leafletjs.com/examples/quick-start/ All we're doing is making changes for our app. Use the details for pulling the CSS and JS files from unpkg.com to make life easier. You will also need an account at https://www.mapbox.com to use leaflet, and you should fit well within the free tier. We can get map pins from https://www.flaticon.com. 
+
+In order to use any icons on the map (one colour for tagging, another for sightings), we need to add the folder for STATIC_URL in the settings.py file to our app. Add a folder 'static' next to the templates and migrations folders, and then save two icons there. Then we add the {% load static %} declaration at the top of the template file.
 
 As we're only doing this in a basic way, we can do the following on our 'templates/bear_detail.html' page. Add the stylesheet, script and style parts. These add the CSS for leaflet, and our map display, plus the JS for leaflet.
+
+Open the file and add {% load static %} as the first line in the file. Then add the changes below:
 
         <head>
         <title>Individual Polar Bear Tracking</title>
@@ -42,15 +46,22 @@ With this in plsce we can now add the components for the map further down the pa
     id: 'mapbox.mapbox-terrain-v2',
     accessToken: 'your.mapbox.access.token'
     }).addTo(mymap);
-    var marker = L.marker([{{ bear.capture_lat}}, {{bear.capture_long}}]).addTo(mymap);
+    var taggingIcon = L.icon({ 
+    iconUrl: "{% static 'images/placeholder-yellow.png' %} ", 
+    iconSize: [35, 35] });
+    var marker = L.marker([{{ bear.capture_lat}}, {{bear.capture_long}}], {icon: taggingIcon }).addTo(mymap);
     </script>
      <p>Sightings for this bear via Radio Device</p>
 
-We're using the mapbox terrain tiles, as there are no streets. An alternative might be satellite.
+We're using the mapbox terrain tiles, as there are no streets. An alternative might be satellite. You'll need to add your own mapbox access token for this to work.
+
+We use the static tag in the iconUrl to convert the path with django to the icon, and separate the icon declaration so that we're not using a blue default one. This way, we could use red ones for each sighting by looping through those lat/long coordinates and creating a marker for each of them.
 
 From here you could show the locations of the sightings on a map using the GPS coordinates. You could also do a chart showing how many sightings there were for each bear by date. You could also do something with the other categories to produce visualisations to suit your needs.
 
+## Adding Charts to Show Trends
 
+We'll add a chart to the main page showing the variations in the bears as a whole using the guide at https://www.chartjs.org/docs/latest/getting-started/ which should show the basic options in practice.
 
 
 
