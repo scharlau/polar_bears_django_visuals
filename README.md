@@ -1,12 +1,13 @@
 # Visualising Polar Bear Data with Python and Django
-This is a demonstrator app focusing on different ways to use python and flask to parse data for a web application using polar bear tracking data. 
+This is a demonstrator app focusing on different ways to use python and django to parse data for a web application using polar bear tracking data. 
+
+We're building on the exercise done at https://github.com/scharlau/polar_bears_django which takes some open data on polar bear tracking in Alaska, USA, and puts it into a django based website. You don't need to have done that, but it might explain some context, if you're not sure what different parts do. The main goal of this exercise is to see how we use data from an app to generate charts, and map details.
 
 The goal of 'deliberate practice' is to think about how you'd solve this challenge, and to work at developing code to make this work. There is no single 'correct' version of this code. The purpose of the exercise it become familiar with different ways of making the application work. You should explore how this simple application is done in python with flask and sqlite3 so that you understand how the components work together to show up in the views you see in the browser.
 
 Under 'deliberate practice' we offer up the challenge, then think about options for developing a solution, and code for 12 minutes. After that we pause to discuss how people are approaching the problem, and what they're trying to do. This should be repeated three times and then wrapped up with time for people to express what they found most useful during the session. This should take an hour.
 
 #### Getting Started 
-We're building on the exercise done at https://github.com/scharlau/polar_bears_django which takes some open data on polar bear tracking in Alaska, USA, and puts it into a django based website. Go do that if you haven't already.
 
 We now want to add some extras so that we can start to visualise the data using some javascript libraries for charting and displaying maps. This will make the data on the pages more interesting.
 
@@ -53,7 +54,7 @@ With this in plsce we can now add the components for the map further down the pa
     </script>
      <p>Sightings for this bear via Radio Device</p>
 
-We're using the mapbox terrain tiles, as there are no streets. An alternative might be satellite. You'll need to add your own mapbox access token for this to work.
+We're using the mapbox terrain tiles, as there are no streets. An alternative might be satellite. You'll need to add your own mapbox access token for this to work. For other maps, look at the tiles available from mapbox: https://docs.mapbox.com/api/maps/static-tiles/ and you can also look at the tiles from OpenStreetMap too: https://wiki.openstreetmap.org/wiki/Tiles 
 
 We use the static tag in the iconUrl to convert the path with django to the icon, and separate the icon declaration so that we're not using a blue default one. This way, we could use red ones for each sighting by looping through those lat/long coordinates and creating a marker for each of them.
 
@@ -164,7 +165,7 @@ Go to the configuration options and add these settings as part of the https://ww
 
 Now if you reload the page you'll see all 12 male bears. 
 
-As you can see, it is not too complicated to add either charts, or maps. For charts, you need to do more data manipulation to create the variables that you want, and for most that will be easy.
+As you can see, it is not too complicated to add either charts, or maps. For charts, you need to do more data manipulation to create the variables that you want, and for most attributes that you might want to manipulate that will be easy: count items to get values and display the results. How, you count things will be the interesting part.
 
 The challenge comes in deciding how complex you want your chart to be. We've used simple options here, but if you look through the examples, then you'll see there are many more options too. Enjoy.
 
