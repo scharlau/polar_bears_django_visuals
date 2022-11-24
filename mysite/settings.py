@@ -123,7 +123,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-# Heroku: Update database configuration from $DATABASE_URL.
+# cloud app: Update database configuration from $DATABASE_URL.
+# set DATABASE_URL as environment variable in this format
+# DATABASE_URL=mysql://<username>:<password>@<username>.mysql.pythonanywhere-services.com:3306/<database_name>
+# put this into a .env file on your remote server with the command
+# echo "export DATABASE_URL=mysql://<username>:<password>@<username>.mysql.pythonanywhere-services.com:3306/<database_name>" >> .env                                                
+# set this via environment variables
 import dj_database_url
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)

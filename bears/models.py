@@ -4,6 +4,7 @@ from django.utils import timezone
 # Create your models here.
 
 class Bear(models.Model):
+    id = models.BigAutoField(primary_key=True)
     bearID = models.IntegerField()
     pTT_ID = models.IntegerField()
     capture_lat = models.FloatField()
@@ -20,6 +21,7 @@ class Bear(models.Model):
         return f'{self.id}, {self.bearID}, {self.pTT_ID}, {self.capture_lat}, {self.capture_long},{self.sex}, {self.age_class}, {self.ear_applied}, {self.created_date}'
 
 class Sighting(models.Model):
+    id = models.BigAutoField(primary_key=True)
     bear_id = models.ForeignKey('bears.Bear', on_delete=models.CASCADE, related_name='sightings')
     deploy_id = models.IntegerField(default=None)
     recieved = models.TextField()
