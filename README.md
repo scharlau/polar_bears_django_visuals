@@ -169,6 +169,28 @@ As you can see, it is not too complicated to add either charts, or maps. For cha
 
 The challenge comes in deciding how complex you want your chart to be. We've used simple options here, but if you look through the examples, then you'll see there are many more options too. Enjoy.
 
-    
+## Deploying to PythonAnywhere 
+I also deployed this to https://scharlau.pythonanywhere.com as an experiment. I found various issues moving it to MySQL, which made it take longer than expected. 
+ONE: Issues with deploying the django app were easy enough. Adding libraries to the requirements.txt file and ensuring they were in the correct format for the file was trial and error: 
+* refresh the deployment on pythonanywhere, 
+* check the web page, and then
+* check the error log
+* make changes to requirements.txt file and run pip install ... on pythonanywhere and then repeat
+
+TWO: Issues with migrations on pythonanywhere using mysql. This should've been easy too: add dj_database_url library, and then point to relevant database on the mysql server in a .env file with suitable username and password, and then run the migrations. However, the migrations wouldn't run, so I needed to run the 'create table' command myself on the server. Then the parse_csv script would run and run and run, but not save any data into the database tables.
+
+I used sqlmigrate command to generate sql for creating tables, but this was for sqlite instead of mysql. I rewrote them as mysql commands, and ran them on the server. This gave me the tables. 
+
+                CREATE TABLE bears_bear (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, bearID INT NOT NULL, pTT_ID INT NOT NULL, capture_lat DECIMAL NOT NULL, capture_long DECIMAL NOT NULL, sex VARCHAR(2) NOT NULL, age_class VARCHAR(2) NOT NULL, ear_applied VARCHAR(2) NOT NULL, created_date DATETIME NOT NULL);
+
+                CREATE TABLE bears_sighting (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, deploy_id INT NOT NULL, recieved VARCHAR(10) NOT NULL, latitude DECIMAL NOT NULL, longitude DECIMAL NOT NULL, temperature INTEGER NOT NULL, created_date DATETIME NOT NULL, bear_id_id INT NOT NULL, FOREIGN KEY (bear_id_id) REFERENCES bears_bear (id));
+
+However, when using manage.py dumpdata to generate json of data to use with manage.py loaddata command, that says it worked, but did not put the data of 6344 objects into the tables either.
+
+The next step is to revise the parse_csv file to run locally to connect to the server and load the data that way. 
+
+Maybe this would work better if I did the following:
+a) remove the sqlite database - or rename the file so that django doesn't see it.
+b) add the remote database details to the settings.py file
 
 
