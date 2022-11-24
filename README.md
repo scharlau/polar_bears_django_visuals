@@ -187,10 +187,11 @@ I used sqlmigrate command to generate sql for creating tables, but this was for 
 
 However, when using manage.py dumpdata to generate json of data to use with manage.py loaddata command, that says it worked, but did not put the data of 6344 objects into the tables either.
 
-The next step is to revise the parse_csv file to run locally to connect to the server and load the data that way. 
-
-Maybe this would work better if I did the following:
+SUCCESS! I did the following:
 a) remove the sqlite database - or rename the file so that django doesn't see it.
 b) add the remote database details to the settings.py file
+c) run manage.py migrate again, and then load the db.json file
+
+I guess the sqlite db info was confusing things. 
 
 
