@@ -1,4 +1,4 @@
-from git import Repo
+import git
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -12,7 +12,7 @@ def update(request):
         in the git.Repo() as a parameter. In this example it is "scharlau.pythonanywhere.com"
         '''
         repo = git.Repo("scharlau.pythonanywhere.com")
-        origin = repo.remotes.orgin
+        origin = repo.remote.origin
         origin.pull()
         return HttpResponse("updated code on pythonanywhere")
     else:
