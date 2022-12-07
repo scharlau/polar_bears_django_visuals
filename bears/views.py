@@ -11,7 +11,7 @@ def update(request):
         pass the path of the directory where your project will be stored on PythonAnywhere
         in the git.Repo() as a parameter. In this example it is "scharlau.pythonanywhere.com"
         '''
-        repo = git.Repo("/home/scharlau/polar_bears_django_visuals/")
+        repo = git.Repo("polar_bears_django_visuals/")
         origin = repo.remotes.origin
         origin.pull()
         return HttpResponse("updated code on pythonanywhere")
