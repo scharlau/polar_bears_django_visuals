@@ -12,7 +12,7 @@ def update(request):
         in the git.Repo() as a parameter. In this example it is "scharlau.pythonanywhere.com"
         '''
         repo = git.Repo("scharlau.pythonanywhere.com")
-        origin = repo.remote.origin
+        origin = repo.remotes.origin
         origin.pull()
         return HttpResponse("updated code on pythonanywhere")
     else:
