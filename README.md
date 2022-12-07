@@ -199,7 +199,10 @@ On PythonAnywhere the free account doesn't let you deploy you code with a 'git p
 1. https://dev.to/soumyaranjannaik/automatically-deploying-django-app-to-pythonanywhere-through-github-282j for the webhook details, and
 2. https://github.com/marketplace/actions/reload-pythonanywhere-webapp for the reload details.
 
-First, follow the steps at number 1 above, and also remember to update your requiremnts.txt file with the addition of GitPython. 
+First, follow the first three steps at number 1 above, and also remember to update your requiremnts.txt file with the addition of GitPython. In the 'third' step there this is the bears/urls.py file as we've added a new method to the views.py file, so we need to list it here.
+Second, do step 4. Yes, you do need a new key to use as a 'deploy key' with GitHub you can't reuse one that you've already registered there for something else. If you've already created an ssh key to use with GitHub, then you need to give this key a new name such as id_deploy_rsa.  After you register it at GitHub in step 5, it should trigger an email saying that a new key has been added.
+
+
 
 
 
