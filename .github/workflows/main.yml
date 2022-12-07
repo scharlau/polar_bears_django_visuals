@@ -15,5 +15,5 @@ jobs:
         with:
           host: 'eu.pythonanywhere.com'
           username: 'scharlau'
-          api-token: ${{ secrets.API_TOKEN }}
+          api-token: '73b8454c48b927b26df9e1f7331fc2d627880f78'
           domain-name: 'scharlau.pythonanywhere.com'
