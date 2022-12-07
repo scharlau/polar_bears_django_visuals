@@ -194,4 +194,12 @@ c) run manage.py migrate again, and then load the db.json file
 
 I guess the sqlite db info was confusing things. 
 
+## Setting up Continuous Deployment on PythonAnywhere
+On PythonAnywhere the free account doesn't let you deploy you code with a 'git push ...' command. That requires the paid account. Using the free account you can set up GitHub to trigger a deploy to PythonAnywhere by adding a webhook to your application. After you do this, your application will pull the last commit from GitHub after it recieves a notification sent from GitHub. We can then also use the PythonAnywhere API to reload our application too. What follows is based on the notes found at
+1. https://dev.to/soumyaranjannaik/automatically-deploying-django-app-to-pythonanywhere-through-github-282j for the webhook details, and
+2. https://github.com/marketplace/actions/reload-pythonanywhere-webapp for the reload details.
+
+First, follow the steps at number 1 above, and also remember to update your requiremnts.txt file with the addition of GitPython. 
+
+
 

@@ -1,5 +1,23 @@
+import git
 from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from .models import Bear, Sighting
+
+@csrf_exempt
+def update(request):
+    if request.method == "POST":
+        '''
+        pass the path of the directory where your project will be stored on PythonAnywhere
+        in the git.Repo() as a parameter. In this example it is "scharlau.pythonanywhere.com"
+        '''
+        repo = git.Repo("scharlau.pythonanywhere.com")
+        origin = repo.remotes.orgin
+        origin.pull()
+        return HttpResponse("updated code on pythonanywhere")
+    else:
+        return HttpResponse("couldn't update pythonanywhere")
+
 
 def bear_list(request):
     bears = Bear.objects.all()
