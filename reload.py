@@ -11,12 +11,12 @@ api_token = os.environ["API_TOKEN"]
 domain_name = os.environ["DOMAIN_NAME"]
 
 response = requests.post(
-    'https://www.pythonanywhere.com/api/v0/user/{username}/webapps/{domain_name}/reload/'.format(
-        username=pa_username, domain_name=domain_name
+    'https://www.pythonanywhere.com/api/v0/user/{pa_username}/webapps/{domain_name}/reload/'.format(
+        pa_username=pa_username, domain_name=domain_name
     ),
     headers={'Authorization': 'Token {token}'.format(token=api_token)}
 )
 if response.status_code == 200:
     print('reloaded OK')
 else:
-    print('Got unexpected status code {}: {!r}'.format(response.status_code, response.content))
+    print('Got unexpected status code on reload attempt {}: {!r}'.format(response.status_code, response.content))
