@@ -199,8 +199,39 @@ On PythonAnywhere the free account doesn't let you deploy you code with a 'git p
 1. https://dev.to/soumyaranjannaik/automatically-deploying-django-app-to-pythonanywhere-through-github-282j for the webhook details, and
 2. https://github.com/marketplace/actions/reload-pythonanywhere-webapp for the reload details.
 
+#### You need to be working in the virtualenv on PythonAnywhere
+Before you go any further look at your dashboard and confirm the name of the virtualenv that you have for your webapp. Now open a console and run this command to ensure that you are using that virual environment:
+
+                workon polar-bear-visual-virtualenv
+
+You should now see a something like (polar-bear-visual-virtualenv) <timestamp> ~$ to show that you're now in the virtual environment. If you forget to ensure you're working in the virtualenv, then you'll run around in circles trying to get things working, but they won't
+
 First, follow the first three steps at number 1 above, and also remember to update your requiremnts.txt file with the addition of GitPython. In the 'third' step there this is the bears/urls.py file as we've added a new method to the views.py file, so we need to list it here.
+
 Second, do step 4. Yes, you do need a new key to use as a 'deploy key' with GitHub you can't reuse one that you've already registered there for something else. If you've already created an ssh key to use with GitHub, then you need to give this key a new name such as id_deploy_rsa.  After you register it at GitHub in step 5, it should trigger an email saying that a new key has been added.
+
+Third, when you're working through step 7 for the 'webhook' and setting it up on GitHub you might need to cycle through things to get the code working correctly. I found that I had issues getting GitPython to be included - I forgot to ensure that I was in the virtualenv on PythonAnywhere. I was in '.venv', but that wasn't the same. After that was sorted it was down to fixing the path needed for the git.repo(...) method. I did the following:
+1. set line in views.py on local machine
+2. make local commit to git repo and push to remote
+3. pull remote to pythonanywhere
+4. refresh web app in 'web' part of the dashboard
+5. try to set webhook in GitHub
+6. check 'recent deliveries' and then the most recent one, and check the 'response' tab to see the error message - usually 'NoSuchPathError' and then it would show the attempted path, which I could then try to fix
+7. Repeat from step 1
+8. eventually I got 'response 200' and then could see the green tick next to the webhook to show it was in place, and working.
+
+## Setting up the Reload of the application on PythonAnywhere 
+First, go to your PythonAnywhere 'Account' page and click on the tab for 'API Token' and create a new token.
+Second, we want to use the details found at https://www.pythonanywhere.com/forums/topic/27634/ to create a python script to run that will reload our web application. We'll use a toml file to hold the values https://realpython.com/python-toml/ 
+https://medium.datadriveninvestor.com/accessing-github-secrets-in-python-d3e758d8089b 
+Second, go to 'Secrets' in the GitHub settings page for the app, and then go to 'Actions' and create three new ones, which you'll need for the action script that you'll create in a minute.
+        A) API_Token - add the value of the token you created in the step above.
+        B) USERNAME - add the value of your username on PythonAnywhere
+        C) DOMAIN_NAME - this is the URL of your application which is normally <username>.pythonanywhere.com 
+Third, add a 'Secret' for this environment called 'API_Token' and give it the value of the API Token you got in step one just above.
+Fourth, go to 'Actions' from the main repo menu (to the left of where you found 'Settings' earlier) and create a new workflow yml file. 
+
+
 
 
 
