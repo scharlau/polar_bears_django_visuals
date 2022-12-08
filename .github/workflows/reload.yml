@@ -20,6 +20,10 @@ jobs:
         pip install -r requirements.txt
         
     - name: Run app!
+      env:
+        PA_USERNAME = ${{ secrets.PA_USERNAME }}
+        API_TOKEN = ${{ secrets.API_TOKEN }}
+        DOMAIN_NAME = ${{ secrets.DOMAIN_NAME }}
       run: python reload.py
     
       
