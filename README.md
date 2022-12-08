@@ -1,5 +1,5 @@
 # Visualising Polar Bear Data with Python and Django
-This is a demonstrator app focusing on different ways to use python and django to parse data for a web application using polar bear tracking data. 
+This is a demonstrator app focusing on different ways to use python and django to parse data for a web application using polar bear tracking data. Further down you'll also find details about deploying this to https://www.pythonanywhere.com/ as an option.
 
 We're building on the exercise done at https://github.com/scharlau/polar_bears_django which takes some open data on polar bear tracking in Alaska, USA, and puts it into a django based website. You don't need to have done that, but it might explain some context, if you're not sure what different parts do. The main goal of this exercise is to see how we use data from an app to generate charts, and map details.
 
@@ -189,26 +189,24 @@ However, when using manage.py dumpdata to generate json of data to use with mana
 
 SUCCESS! I did the following:
 a) remove the sqlite database - or rename the file so that django doesn't see it.
-b) add the remote database details to the settings.py file
+b) add the remote database details to the settings.py file in PythonAnywhere so that they are 
 c) run manage.py migrate again, and then load the db.json file
 
-I guess the sqlite db info was confusing things. 
+I think the sqlite db info was confusing things for Django and it was much happier only having the one database reference. This currently uses the sqlite database, but did use the MySQL one for a time. In the longer term I would use environment values to pull local and remove environment values for username, password, etc as needed from the system settings so that two separate versions of the settings.py file were required.
 
 ## Setting up Continuous Deployment on PythonAnywhere
-On PythonAnywhere the free account doesn't let you deploy you code with a 'git push ...' command. That requires the paid account. Using the free account you can set up GitHub to trigger a deploy to PythonAnywhere by adding a webhook to your application. After you do this, your application will pull the last commit from GitHub after it recieves a notification sent from GitHub. We can then also use the PythonAnywhere API to reload our application too. What follows is based on the notes found at
-1. https://dev.to/soumyaranjannaik/automatically-deploying-django-app-to-pythonanywhere-through-github-282j for the webhook details, and
-2. https://github.com/marketplace/actions/reload-pythonanywhere-webapp for the reload details. This didn't work for me as you'll see below. Nor did a similar exercise in trying to create my own action to reload the app using the PythonAnywhere API via a GitHub Action.
+On PythonAnywhere the free account doesn't let you deploy you code with a 'git push ...' command. That requires the paid account. Using the free account you can set up GitHub to trigger a deploy to PythonAnywhere by adding a webhook to your application. After you do this, your application will pull the last commit from GitHub after it recieves a notification sent from GitHub. We can then also use the PythonAnywhere API to reload our application too. What follows is based on the notes on adding WebHook details to connect PythonAnywhere applications to GitHub found at https://dev.to/soumyaranjannaik/automatically-deploying-django-app-to-pythonanywhere-through-github-282j 
 
 #### You need to be working in the virtualenv on PythonAnywhere
-Before you go any further look at your dashboard and confirm the name of the virtualenv that you have for your webapp. Now open a console and run this command to ensure that you are using that virual environment:
+Before you go any further look at your PA dashboard and confirm the name of the virtualenv that you have for your webapp. Now open a console and run this command to ensure that you are using that virual environment:
 
                 workon polar-bear-visual-virtualenv
 
-You should now see a something like (polar-bear-visual-virtualenv) <timestamp> ~$ to show that you're now in the virtual environment. If you forget to ensure you're working in the virtualenv, then you'll run around in circles trying to get things working, but they won't
+You should now see a something like (polar-bear-visual-virtualenv) <timestamp> ~$ to show that you're now in the virtual environment. If you forget to ensure you're working in the virtualenv, then you'll run around in circles trying to get things working, but they won't work until you're in the correct virtual environment on PA.
 
-First, follow the first three steps at number 1 above, and also remember to update your requiremnts.txt file with the addition of GitPython. In the 'third' step there this is the bears/urls.py file as we've added a new method to the views.py file, so we need to list it here.
+First, follow the first three steps at the dev.to web page above, and also remember to update your requirements.txt file with the addition of GitPython. In the 'third' step there this is the bears/urls.py file as we've added a new method to the views.py file, so we need to list it here.
 
-Second, do step 4. Yes, you do need a new key to use as a 'deploy key' with GitHub you can't reuse one that you've already registered there for something else. If you've already created an ssh key to use with GitHub, then you need to give this key a new name such as id_deploy_rsa.  After you register it at GitHub in step 5, it should trigger an email saying that a new key has been added.
+Second, do step 4. Yes, you do need a new key to use as a 'deploy key' with GitHub you can't reuse one that you've already registered there for your general access. If you've already created an ssh key to use with GitHub, then you need to give this key a new name such as id_deploy_rsa.  After you register it at GitHub in step 5, it should trigger an email saying that a new key has been added.
 
 Third, when you're working through step 7 for the 'webhook' and setting it up on GitHub you might need to cycle through things to get the code working correctly. I found that I had issues getting GitPython to be included - I forgot to ensure that I was in the virtualenv on PythonAnywhere. I was in '.venv', but that wasn't the same. After that was sorted it was down to fixing the path needed for the git.repo(...) method. I did the following:
 1. set line in views.py on local machine
@@ -219,6 +217,8 @@ Third, when you're working through step 7 for the 'webhook' and setting it up on
 6. check 'recent deliveries' and then the most recent one, and check the 'response' tab to see the error message - usually 'NoSuchPathError' and then it would show the attempted path, which I could then try to fix
 7. Repeat from step 1
 8. eventually I got 'response 200' and then could see the green tick next to the webhook to show it was in place, and working.
+
+Now the webhook should be working correctly, and pulling the code from GitHub following a push to GitHub. You can manually reload the web application to confirm changes are showing up. Next, we can turn our attention to automating the reloading of the application.
 
 ## Setting up the Reload of the application on PythonAnywhere 
 First, go to your PythonAnywhere 'Account' page and click on the tab for 'API Token' and create a new token.
@@ -247,13 +247,13 @@ Second, we want to use the details found at https://www.pythonanywhere.com/forum
         else:
         print('Got unexpected status code on reload attempt {}: {!r}'.format(response.status_code, response.content))
 
-Second, add the environment variables as noted above for the pa_username, api_token, and domain_name to your system. Yes, you could just write them here, that would work too if you don't intend to push this file to GitHub, but keep it out of your repository.
-Third, you should be able to run the file and have it successfully reload your application. 
+Second, add the environment variables as noted above for the pa_username, api_token, and domain_name to your system. Yes, you could just write them here, that would work too if you don't intend to push this file to GitHub, but keep it out of your repository. By all means do this first if you like to confirm the script works correctly.
+Third, as you probably want this file in GitHub be sure to switch to have the file use environment variables so that your code is more secure. Confirm that it works this way to successfully reload your application. 
 
 With this in place you can now edit the application, make a local commit, and then push to GitHub where the webhook will trigger a pull from GitHub to PythonAnywhere. Then you can run the reload script. All fine and good.
 
 ### Adding reload.py to a GitHub Action
-Ideally, when the webhook was called it would trigger a GitHub Action to run the reload script. If you look in the workflow folder, you'll find an action, which does this. However, it always encouters a reponse 500, server error. You'll also find a 'main.yml' file, which does something similar via JS, but that doesn't work either. If you want to pursue this yourself, then you need to do the following:
+Ideally, when the webhook was called it would trigger a GitHub Action to run the reload script. If you look in the workflow folder, you'll find an action, which does this. However, it always encouters a reponse 500, server error. You'll also find a 'main.yml' file, that uses the details at https://github.com/marketplace/actions/reload-pythonanywhere-webapp for the reload details. This didn't work for me. Nor did a similar exercise in trying to create my own action to reload the app using the PythonAnywhere API via a GitHub Action. Neither of these options worked for me. If you want to pursue this yourself, then you need to try the following:
 
 First, go to 'Secrets' in the GitHub settings page for the app, and then go to 'Actions' and create three new ones, which you'll need for the action script that you'll create in a minute.
         A) API_Token - add the value of the token you created in the step above.

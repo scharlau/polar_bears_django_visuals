@@ -76,6 +76,10 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+# if moving this to PythonAnywhere, or somewhere else with mysql or postgresql, then 
+# add values to .env file, or use environment variables to fill in relevant attribute values
+# for password, database name, etc.
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
