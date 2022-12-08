@@ -197,7 +197,7 @@ I guess the sqlite db info was confusing things.
 ## Setting up Continuous Deployment on PythonAnywhere
 On PythonAnywhere the free account doesn't let you deploy you code with a 'git push ...' command. That requires the paid account. Using the free account you can set up GitHub to trigger a deploy to PythonAnywhere by adding a webhook to your application. After you do this, your application will pull the last commit from GitHub after it recieves a notification sent from GitHub. We can then also use the PythonAnywhere API to reload our application too. What follows is based on the notes found at
 1. https://dev.to/soumyaranjannaik/automatically-deploying-django-app-to-pythonanywhere-through-github-282j for the webhook details, and
-2. https://github.com/marketplace/actions/reload-pythonanywhere-webapp for the reload details.
+2. https://github.com/marketplace/actions/reload-pythonanywhere-webapp for the reload details. This didn't work for me as you'll see below. Nor did a similar exercise in trying to create my own action to reload the app using the PythonAnywhere API via a GitHub Action.
 
 #### You need to be working in the virtualenv on PythonAnywhere
 Before you go any further look at your dashboard and confirm the name of the virtualenv that you have for your webapp. Now open a console and run this command to ensure that you are using that virual environment:
@@ -222,14 +222,45 @@ Third, when you're working through step 7 for the 'webhook' and setting it up on
 
 ## Setting up the Reload of the application on PythonAnywhere 
 First, go to your PythonAnywhere 'Account' page and click on the tab for 'API Token' and create a new token.
-Second, we want to use the details found at https://www.pythonanywhere.com/forums/topic/27634/ to create a python script to run that will reload our web application. We'll use a toml file to hold the values https://realpython.com/python-toml/ 
-https://medium.datadriveninvestor.com/accessing-github-secrets-in-python-d3e758d8089b 
-Second, go to 'Secrets' in the GitHub settings page for the app, and then go to 'Actions' and create three new ones, which you'll need for the action script that you'll create in a minute.
+Second, we want to use the details found at https://www.pythonanywhere.com/forums/topic/27634/ to create a python script to run that will reload our web application. Create a file in the root of your application that sits next to manage.py called 'reload.py'. Then put this code into the file:
+
+        import requests
+        import os
+
+        # add each of the variables to your environment as follows without the < > marks
+        # on linux/macOS as below, on windows go here: https://helpdeskgeek.com/windows-10/add-windows-path-environment-variable/
+        # export PA_USERNAME=<username on pythonanywhere>
+
+        # use this if running from GitHub Action
+        pa_username = os.environ["PA_USERNAME"]
+        api_token = os.environ["API_TOKEN"]
+        domain_name = os.environ["DOMAIN_NAME"]
+
+        response = requests.post(
+        'https://www.pythonanywhere.com/api/v0/user/{pa_username}/webapps/{domain_name}/reload/'.format(
+                pa_username=pa_username, domain_name=domain_name
+        ),
+        headers={'Authorization': 'Token {token}'.format(token=api_token)}
+        )
+        if response.status_code == 200:
+        print('reloaded OK')
+        else:
+        print('Got unexpected status code on reload attempt {}: {!r}'.format(response.status_code, response.content))
+
+Second, add the environment variables as noted above for the pa_username, api_token, and domain_name to your system. Yes, you could just write them here, that would work too if you don't intend to push this file to GitHub, but keep it out of your repository.
+Third, you should be able to run the file and have it successfully reload your application. 
+
+With this in place you can now edit the application, make a local commit, and then push to GitHub where the webhook will trigger a pull from GitHub to PythonAnywhere. Then you can run the reload script. All fine and good.
+
+### Adding reload.py to a GitHub Action
+Ideally, when the webhook was called it would trigger a GitHub Action to run the reload script. If you look in the workflow folder, you'll find an action, which does this. However, it always encouters a reponse 500, server error. You'll also find a 'main.yml' file, which does something similar via JS, but that doesn't work either. If you want to pursue this yourself, then you need to do the following:
+
+First, go to 'Secrets' in the GitHub settings page for the app, and then go to 'Actions' and create three new ones, which you'll need for the action script that you'll create in a minute.
         A) API_Token - add the value of the token you created in the step above.
-        B) USERNAME - add the value of your username on PythonAnywhere
+        B) PA_USERNAME - add the value of your username on PythonAnywhere
         C) DOMAIN_NAME - this is the URL of your application which is normally <username>.pythonanywhere.com 
-Third, add a 'Secret' for this environment called 'API_Token' and give it the value of the API Token you got in step one just above.
-Fourth, go to 'Actions' from the main repo menu (to the left of where you found 'Settings' earlier) and create a new workflow yml file. 
+Third, add a copy of the reload.yml file as a new 'action'. Go to 'Actions'->'New Workflow'->'set up a workflow yourself' and then add the content there and make a commit.
+Fourth, you should now be able to run this workflow and check any errors and see if they can be fixed, or at least determine why it fails. 
 
 
 

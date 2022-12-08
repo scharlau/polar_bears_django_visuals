@@ -9,8 +9,6 @@ import os
 pa_username = os.environ["PA_USERNAME"]
 api_token = os.environ["API_TOKEN"]
 domain_name = os.environ["DOMAIN_NAME"]
-print(pa_username)
-print(domain_name)
 
 response = requests.post(
     'https://www.pythonanywhere.com/api/v0/user/{pa_username}/webapps/{domain_name}/reload/'.format(
