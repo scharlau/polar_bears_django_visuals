@@ -13,11 +13,20 @@ We now want to add some extras so that we can start to visualise the data using 
 
 We'll use https://www.chartjs.org for charts, and https://leafletjs.com for maps. That means there are no licensing issues to worry about in the future.
 
-## Add a Map page for Each Bear
+
+## Get a Mapbox Access Token
 
 This is based on the tutorial at https://leafletjs.com/examples/quick-start/ All we're doing is making changes for our app. Use the details for pulling the CSS and JS files from unpkg.com to make life easier. You will also need an account at https://www.mapbox.com to use leaflet, and you should fit well within the free tier. We can get map pins from https://www.flaticon.com. 
 
 In order to use any icons on the map (one colour for tagging, another for sightings), we need to add the folder for STATIC_URL in the settings.py file to our app. Add a folder 'static' next to the templates and migrations folders, and then save two icons there. Then we add the {% load static %} declaration at the top of the template file.
+
+## Add a Map page for Each Bear
+
+Double-check your mysite/settings.py file to see the path you're using for the 'static' folder. It should look like this:
+
+        STATIC_URL = '/static/'
+
+Note the forward-slash to before and after the name of the folder. This is important for later steps.
 
 As we're only doing this in a basic way, we can do the following on our 'templates/bears/bear_detail.html' page. Add the stylesheet, script and style parts. These add the CSS for leaflet, and our map display, plus the JS for leaflet.
 
