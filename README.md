@@ -9,16 +9,15 @@ Under 'deliberate practice' we offer up the challenge, then think about options 
 
 #### Getting Started 
 
-We now want to add some extras so that we can start to visualise the data using some javascript libraries for charting and displaying maps. This will make the data on the pages more interesting.
+We want to add some extras so that we can start to visualise the data using some javascript libraries for charting and displaying maps. This will make the data on the pages more interesting. The javascript we're adding is simple enough for you to copy and paste, and tweak a bit without knowing much about javascript. We are using it only to position, and display information. 
 
 We'll use https://www.chartjs.org for charts, and https://leafletjs.com for maps. That means there are no licensing issues to worry about in the future.
-
 
 ## Set Up Leaflet and Map Icons
 
 This is based on the tutorial at https://leafletjs.com/examples/quick-start/ All we're doing is making changes for our app. Use the details for pulling the CSS and JS files from unpkg.com to make life easier. We can get map pins from https://www.flaticon.com. 
 
-In order to use any icons on the map (one colour for tagging, another for sightings), we need to add the folder for STATIC_URL in the settings.py file to our app. Add a folder 'static' next to the templates and migrations folders, and then save two icons there. Then we add the {% load static %} declaration at the top of the template file.
+In order to use any icons on the map (one colour for tagging, another for sightings), we need to add the folder for STATIC_URL in the settings.py file to our app. Add a folder 'static' next to the templates and migrations folders so that it is on the same level as them, and add a folder called 'images' inside the 'static' folder. Look at the folders in this repository to ensure that you put the folders in the right place. When you're done, then save two icons there. 
 
 ## Add a Map page for Each Bear
 
@@ -26,7 +25,7 @@ Double-check your mysite/settings.py file to see the path you're using for the '
 
         STATIC_URL = '/static/'
 
-Note the forward-slash to before and after the name of the folder. This is important for later steps.
+Note the forward-slash before and after the name of the folder. This is important for later steps.
 
 As we're only doing this in a basic way, we can do the following on our 'templates/bears/bear_detail.html' page. Add the stylesheet, script and style parts. These add the CSS for leaflet, and our map display, plus the JS for leaflet.
 
@@ -43,27 +42,28 @@ Open the file and add {% load static %} as the first line in the file. Then add 
         </style>
         </head>
 
-With this in plsce we can now add the components for the map further down the page. We add this after the details for the bear, and before we list the sightings. We want to show where the bear was tagged. As you can see we're reusing the coordinates for latitude and longitude from above in the javascript.
+With this in plsce we can now add the components for the map further down the page. We add this after the details for the bear, and before we list the sightings. We want to show where the bear was tagged. As you can see we're reusing the coordinates for latitude and longitude from above in the javascript. We are using the 'mapbox' syntax/format, which asks for an 'accessToken', but as we're using openstreetmap for our map tiles, we can fill the accessToken with any string value we wish.
 
      {{bear.ear_applied}}	
      </p>
      <div id="mapid"></div>
-     <script type = "text/javascript">
-     var mymap = L.map('mapid').setView([{{ bear.capture_lat}}, {{bear.capture_long}}], 6 );
-     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    maxZoom: 18,
-    id: 'mapbox.mapbox-terrain-v2',
-    accessToken: 'your.mapbox.access.token'
-    }).addTo(mymap);
-    var taggingIcon = L.icon({ 
-    iconUrl: "{% static 'images/placeholder-yellow.png' %} ", 
-    iconSize: [35, 35] });
-    var marker = L.marker([{{ bear.capture_lat}}, {{bear.capture_long}}], {icon: taggingIcon }).addTo(mymap);
-    </script>
+     <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from 
+      <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+      <script type = "text/javascript">
+        var mymap = L.map('mapid').setView([{{ bear.capture_lat}}, {{bear.capture_long}}], 6 );
+        accessToken: 'no-token',
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+       maxZoom: 18,
+     }).addTo(mymap); 
+     var taggingIcon = L.icon({ 
+     iconUrl: "{% static 'images/placeholder-yellow.png' %} ", 
+     iconSize: [35, 35] });
+     var marker = L.marker([{{ bear.capture_lat }}, {{bear.capture_long }}], {icon: taggingIcon }).addTo(mymap);
+     </script>
      <p>Sightings for this bear via Radio Device</p>
 
-We're using the mapbox terrain tiles, as there are no streets. An alternative might be satellite. You'll need to add your own mapbox access token for this to work. For other maps, look at the tiles available from mapbox: https://docs.mapbox.com/api/maps/static-tiles/ and you can also look at the tiles from OpenStreetMap too: https://wiki.openstreetmap.org/wiki/Tiles 
+ For other maps, look at the raster map tiles available from mapbox: https://docs.mapbox.com/api/maps/static-tiles/, but if you use these, then you need a MapBox account, and accessToken. You can also look at the tiles from OpenStreetMap too: https://wiki.openstreetmap.org/wiki/Tiles, and the list of tiles, and their syntax at https://wiki.openstreetmap.org/wiki/Raster_tile_providers. 
 
 We use the static tag in the iconUrl to convert the path with django to the icon, and separate the icon declaration so that we're not using a blue default one. This way, we could use red ones for each sighting by looping through those lat/long coordinates and creating a marker for each of them.
 
@@ -73,10 +73,28 @@ From here you could show the locations of the sightings on a map using the GPS c
 
 We'll add a chart to the main page showing the variations in the bears as a whole using the guide at https://www.chartjs.org/docs/latest/getting-started/ which should show the basic options in practice.
 
-First, we ensure it all works by adding the basic scenario to our page. This will confirm the javascript is loading, and that our chart is displaying in the right location. Open 'templates/bears/bear_list.html' and add this code near the top of the file. This  will put the chart above the listing of the bears. This should be before the loop of bears details.
+First, we ensure it all works by adding the basic scenario to our page. This will confirm the javascript is loading, and that our chart is displaying in the right location. Open 'templates/bears/bear_list.html' and then we can start editing the content so that our chart is styled, and displays correctly. 
+
+First, we want to be able to size the canvas of our chart, so we need to add some CSS styling for this. Add this to the <head> section of the page:
+
+        <title>Polar Bear Tracking</title>
+        <style>
+        #chart-wrapper {
+                display: inline-block;
+                position: relative;
+                width: 500px;
+        }
+        </style>
+        </head>
+
+This will style the #chart-wrapper div that we'll put around the <canvas> tags. You can also use % instead of px for sizing.
+
+This  will put the chart above the listing of the bears. This should be before the loop of bears details.
 
     <h1>Polar bears Tagged for Tracking</h1>
+    <div>
     <canvas id="myChart"></canvas>
+    </div id="chart-wrapper">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <script type= 'text/javascript'>
     var ctx = document.getElementById('myChart').getContext('2d');
@@ -143,7 +161,6 @@ In the template we change our javascript for the chart to look like this:
         labels: ['Male', 'Female', 'Left Ear', 'Right Ear'],
         datasets: [{
             label: 'Polar Bears',
-            order: number
             backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(255, 99, 132)',
             data: [{{ male }},{{ female }}, {{ left_ear }}, {{ right_ear }}]
@@ -151,7 +168,9 @@ In the template we change our javascript for the chart to look like this:
         },
 
         // Configuration options go here
-        options: { }
+        options: {
+                responsive: true
+         }
         });
 
 We change it to a bar chart, and then give it a new label. We pass the variable into the data array using the familiar syntax. After you reload the page, it looks like there are no male bears. Looking at the list below, you can see that there are a number of male ones. What's going on?
@@ -162,6 +181,7 @@ Go to the configuration options and add these settings as part of the https://ww
 
         // Configuration options go here
         options: { 
+                responsive: true,
                 scales: {
                         yAxes: [{
                                 ticks: {
