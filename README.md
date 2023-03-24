@@ -89,7 +89,7 @@ First, we want to be able to size the canvas of our chart, so we need to add som
 
 This will style the #chart-wrapper div that we'll put around the <canvas> tags. You can also use % instead of px for sizing.
 
-This  will put the chart above the listing of the bears. This should be before the loop of bears details.
+This  will put the chart above the listing of the bears. This should be before the loop of bears details. We need the 'responsive: true' line in options to work with our chart size.
 
     <h1>Polar bears Tagged for Tracking</h1>
     <div>
@@ -114,7 +114,9 @@ This  will put the chart above the listing of the bears. This should be before t
     },
 
     // Configuration options go here
-    options: {}
+    options: {
+        responsive: true
+    }
     });
     </script>
     
